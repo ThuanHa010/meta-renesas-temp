@@ -45,15 +45,13 @@ IMAGE_INSTALL:append = " \
 
 # Kernel modules of ICCOM
 ICCOM_KERNEL_PKGS = " \
-    kernel-module-iccom-mfis \
-    kernel-module-iccom-hwspinlock-sample \
+    kernel-module-iccom \
 "
 
 # User modules of ICCOM only supports 64bit
 ICCOM_USER_PKGS = ""
 ICCOM_USER_PKGS:aarch64-poky-linux = " \
     iccom-user-module \
-    iccom-tp-user-module \
 "
 
 # ICCOM Packages
