@@ -1,0 +1,125 @@
+From 2c4f526d32d90ebddf53438150ce4ae0ef538384 Mon Sep 17 00:00:00 2001
+From: "nguyen.tran-van" <nguyen.tran-van@banvien.com.vn>
+Date: Wed, 24 Jul 2024 10:52:37 +0000
+Subject: [PATCH] Add iccom sample testapp
+
+---
+ Makefile          |  7 ++++-
+ test/sample_app.c | 73 +++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 79 insertions(+), 1 deletion(-)
+ create mode 100644 test/sample_app.c
+
+diff --git a/Makefile b/Makefile
+index c82aae7..3313754 100644
+--- a/Makefile
++++ b/Makefile
+@@ -15,6 +15,8 @@ REALNAME = $(SONAME).$(MINOR_VERSION)
+ TARGET   = $(OUTDIR)/$(REALNAME)
+ TESTSRC  = $(TESTDIR)/test.c
+ TEST     = $(OUTDIR)/iccom-test
++APPSRC  = $(TESTDIR)/sample_app.c
++APP     = $(OUTDIR)/iccom-sample-app
+ LOGLEVEL ?= LOGERR
+ 
+ ifeq ($(LOGLEVEL),LOGERR)
+@@ -26,7 +28,7 @@ else ifeq ($(LOGLEVEL),LOGDBG)
+ else #ifeq ($(LOGLEVEL),LOGNONE)
+ endif
+ 
+-all : $(TARGET) $(TEST)
++all : $(TARGET) $(TEST) $(APP)
+ 
+ $(TARGET) : $(OBJS)
+ 	@mkdir -p $(OUTDIR)
+@@ -39,6 +41,9 @@ $(OBJS): $(SRCS)
+ $(TEST) : $(TESTSRC) $(TARGET)
+ 	$(CC) $(CFLAGS) $(LDFLAGS) $(TESTSRC) $(TARGET) -o $@
+ 
++$(APP) : $(APPSRC) $(TARGET)
++	$(CC) $(CFLAGS) $(LDFLAGS) $(TESTSRC) $(TARGET) -o $@
++
+ .PHONY: clean
+ clean :
+ 	rm -f $(OBJS)
+diff --git a/test/sample_app.c b/test/sample_app.c
+new file mode 100644
+index 0000000..c5b96d7
+--- /dev/null
++++ b/test/sample_app.c
+@@ -0,0 +1,73 @@
++#include <stdio.h>
++#include <string.h>
++#include <iccom.h>
++
++static void Iccom_app_CallBack(enum Iccom_channel_number channel_no, 
++                                    uint32_t recvSize, const uint8_t *pRecvBuff);
++
++static uint8_t ReceiveBuffer[ICCOM_BUF_MAX_SIZE];
++static uint8_t SendBuffer[ICCOM_BUF_MAX_SIZE];
++
++/*******************************************************************/
++/* Sample "Application" main */
++/*******************************************************************/
++int32_t main(void)
++{
++    int32_t ret;
++    int32_t len;
++    Iccom_channel_t pChannelHandle;
++    Iccom_init_param iccomInit;
++    Iccom_send_param send_para ;
++    printf("ICCOM SAMPLE start\n");
++
++    /* Set Channel number,buffer pointer,and call back function pointer */
++    iccomInit.channel_no = ICCOM_CHANNEL_0;
++    iccomInit.recv_buf = &ReceiveBuffer[0];
++    iccomInit.recv_cb = (Iccom_recv_callback_t)&Iccom_app_CallBack;
++    printf (" channel_no = %d\n",iccomInit.channel_no);
++
++    /*------------------------*/
++    /* Call initialize API */
++    /*------------------------*/
++    ret = Iccom_lib_Init(&iccomInit, &pChannelHandle);
++    if (ret != ICCOM_OK) {
++        printf (" Iccom_lib_Init error ret = %d\n",ret);
++        return ret;
++    }
++
++    /* Set send parameter */
++    (void)memset(SendBuffer, 0x00, ICCOM_BUF_MAX_SIZE);
++    len = sprintf((char *)SendBuffer,"Linux -ICCOM-TEST-SAMPLE DATA");
++    send_para.send_size = len ;
++    send_para.send_buf =SendBuffer;
++    send_para.channel_handle = pChannelHandle;
++    /*-------------------*/
++    /* Call send API */
++    /*-------------------*/
++    ret = Iccom_lib_Send(&send_para);
++    if (ret != ICCOM_OK) {
++        printf (" Iccom_lib_Send error ret = %d\n",ret);
++        return ret;
++    }
++    /*-------------------*/
++    /* Call final API */
++    /*-------------------*/
++    ret = Iccom_lib_Final(pChannelHandle);
++    if (ret != ICCOM_OK) {
++        printf (" Iccom_lib_Final error ret = %d\n",ret);
++        return ret;
++    }
++    printf("ICCOM SAMPLE end\n");
++    return ICCOM_OK;
++}
++
++/******************************************************************/
++/* Callback function */
++/******************************************************************/
++static void Iccom_app_CallBack(enum Iccom_channel_number channel_no,
++                                    uint32_t recv_size,
++                                    const uint8_t *recv_buf)
++{
++    uint8_t recvBuffer[ICCOM_BUF_MAX_SIZE];
++    (void)memcpy(&recvBuffer[0], recv_buf, recv_size);
++}
+-- 
+2.25.1
+
