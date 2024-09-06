@@ -1,0 +1,55 @@
+diff --git a/iccom_driver.c b/iccom_driver.c
+index f2219aa..6c74eb7 100644
+--- a/iccom_driver.c
++++ b/iccom_driver.c
+@@ -181,7 +181,13 @@ static int32_t iccom_drv_open(struct iccom *iccom,
+ 		init_waitqueue_head(&iccom_comm->ioctl_q);
+ 		iccom_comm->close_flg = 0;
+ 
+-		remap_addr = ioremap_nocache(
++		#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
++			#define ioremap_func ioremap_nocache
++		#else
++			#define ioremap_func ioremap
++		#endif
++
++		remap_addr = ioremap_func(
+ 			(uintptr_t)iccom_hw->mfis_iicr_addr, ICCOM_MFIS_LEN);
+ 		if (remap_addr == NULL) {
+ 			dev_err(iccom->dev, "[Err]Remap IICR failed\n");
+@@ -190,7 +196,7 @@ static int32_t iccom_drv_open(struct iccom *iccom,
+ 			iccom_comm->mfis_iicr_addr = (uint32_t *)remap_addr;
+ 		}
+ 
+-		remap_addr = ioremap_nocache(
++		remap_addr = ioremap_func(
+ 			(uintptr_t)iccom_hw->mfis_eicr_addr, ICCOM_MFIS_LEN);
+ 		if (remap_addr == NULL) {
+ 			dev_err(iccom->dev, "[Err]Remap EICR failed\n");
+@@ -199,7 +205,7 @@ static int32_t iccom_drv_open(struct iccom *iccom,
+ 			iccom_comm->mfis_eicr_addr = (uint32_t *)remap_addr;
+ 		}
+ 
+-		remap_addr = ioremap_nocache(
++		remap_addr = ioremap_func(
+ 			(uintptr_t)iccom_hw->mfis_imbr_addr, ICCOM_MFIS_LEN);
+ 		if (remap_addr == NULL) {
+ 			dev_err(iccom->dev, "[Err]Remap IMBR failed\n");
+@@ -208,7 +214,7 @@ static int32_t iccom_drv_open(struct iccom *iccom,
+ 			iccom_comm->mfis_imbr_addr = (uint32_t *)remap_addr;
+ 		}
+ 
+-		remap_addr = ioremap_nocache(
++		remap_addr = ioremap_func(
+ 			(uintptr_t)iccom_hw->mfis_embr_addr, ICCOM_MFIS_LEN);
+ 		if (remap_addr == NULL) {
+ 			dev_err(iccom->dev, "[Err]Remap EMBR failed\n");
+@@ -217,7 +223,7 @@ static int32_t iccom_drv_open(struct iccom *iccom,
+ 			iccom_comm->mfis_embr_addr = (uint32_t *)remap_addr;
+ 		}
+ 
+-		remap_addr = ioremap_nocache((uintptr_t)iccom_hw->cta_addr,
++		remap_addr = ioremap_func((uintptr_t)iccom_hw->cta_addr,
+ 				iccom_hw->cta_size);
+ 		if (remap_addr == NULL) {
+ 			dev_err(iccom->dev, "[Err]Remap CTA failed\n");
