@@ -8,12 +8,11 @@ PR = "r0"
 
 REQUIRED_DISTRO_FEATURES = "iccom"
 
-SRC_URI = "git://github.com/CogentEmbedded/libiccom.git;protocol=https;branch=master"
-SRCREV = "89478ad5de0b351f8622db3e384c65021e3b2370"
-S = "${WORKDIR}/git"
+SRC_URI = "file://linux_iccom_library.tar.gz"
+S = "${WORKDIR}/linux_iccom_library"
 
 SRC_URI:append = " \
-    file://0001-Add-iccom-sample-testapp.patch \
+    file://0001-iccom-lib-add-iccom-sample-test-app.patch \
 "
 
 COMPATIBLE_MACHINE = "salvator-x"
