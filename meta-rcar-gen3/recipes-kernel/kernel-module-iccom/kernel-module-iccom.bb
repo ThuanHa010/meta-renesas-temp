@@ -12,14 +12,11 @@ DEPENDS = "linux-renesas"
 PN = "kernel-module-iccom"
 PR = "r0"
 
-REQUIRED_DISTRO_FEATURES = "iccom"
-
-SRC_URI = "git://github.com/CogentEmbedded/kernel-module-iccom.git;protocol=https;branch=master"
-SRCREV = "a8c50ea65865ca72c7f53e8fcf893b6b512c3db2"
-S = "${WORKDIR}/git"
+SRC_URI = "file://linux_iccom_driver.tar.gz"
+S = "${WORKDIR}/linux_iccom_driver"
 
 SRC_URI:append = " \
-    file://0001-support-linux-v5.patch \
+    file://0001-iccom-drv-iccom-support-linux-v5.patch \
 "
 
 do_compile() {
