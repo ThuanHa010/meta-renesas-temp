@@ -44,6 +44,8 @@ SUPPORT_ICCOM = " \
 
 SRC_URI:append = " \
     ${@oe.utils.conditional("USE_ICCOM", "1", "${SUPPORT_ICCOM}", "", d)} \
+    file://0001-arch-arm64-boot-dts-renesas-r8a77951_iccomdts.patch \
+    file://0001-arch-arm64-boot-dts-renesas-r8a77961_iccomdts.patch \
 "
 
 # Add SCHED_DEBUG config fragment to support CAS
