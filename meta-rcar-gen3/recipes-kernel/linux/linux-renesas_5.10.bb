@@ -37,15 +37,15 @@ SRC_URI:append = " \
     file://0001-scripts-Add-module.lds-to-fix-out-of-tree-modules-bu.patch \
 "
 
-# Enable RPMSG_VIRTIO depend on ICCOM
+# Enable RPMSG_VIRTIO; device tree H3/M3 depend on ICCOM
 SUPPORT_ICCOM = " \
     file://iccom.cfg \
+    file://0001-arch-arm64-boot-dts-renesas-r8a77951_iccomdts.patch \
+    file://0001-arch-arm64-boot-dts-renesas-r8a77961_iccomdts.patch \
 "
 
 SRC_URI:append = " \
     ${@oe.utils.conditional("USE_ICCOM", "1", "${SUPPORT_ICCOM}", "", d)} \
-    file://0001-arch-arm64-boot-dts-renesas-r8a77951_iccomdts.patch \
-    file://0001-arch-arm64-boot-dts-renesas-r8a77961_iccomdts.patch \
 "
 
 # Add SCHED_DEBUG config fragment to support CAS
