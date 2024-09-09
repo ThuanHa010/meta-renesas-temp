@@ -30,6 +30,7 @@ do_install () {
     # Create destination folders
     install -d ${D}${libdir}
     install -d ${D}${includedir}
+    install -d ${D}${bindir}
 
     # Copy library
     install -m 0755 ${S}/out/libiccom.so.1.0 ${D}${libdir}
@@ -39,6 +40,9 @@ do_install () {
     cd ${D}${libdir}
     ln -sf libiccom.so.1.0 libiccom.so.1
     ln -sf libiccom.so.1 libiccom.so
+
+    install -m 0755 ${S}/out/iccom-test ${D}${bindir}
+    install -m 0755 ${S}/out/iccom-sample-app ${D}${bindir}
 }
 
 RPROVIDES:${PN} += "linux-iccomlib"
@@ -46,4 +50,12 @@ RPROVIDES:${PN} += "linux-iccomlib"
 FILES:${PN} += " \
     ${libdir}/* \
     ${includedir}/iccom.h \
+"
+
+PACKAGES =+ "libiccom-test"
+
+FILES:libiccom-test += " \
+    ${includedir}/* \
+    ${bindir}/iccom-test \
+    ${bindir}/iccom-sample-app \
 "
