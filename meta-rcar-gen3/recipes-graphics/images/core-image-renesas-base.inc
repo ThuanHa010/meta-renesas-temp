@@ -52,6 +52,7 @@ ICCOM_KERNEL_PKGS = " \
 ICCOM_USER_PKGS = ""
 ICCOM_USER_PKGS:aarch64-poky-linux = " \
     iccom-user-module \
+    libiccom-test \
 "
 
 # ICCOM Packages
