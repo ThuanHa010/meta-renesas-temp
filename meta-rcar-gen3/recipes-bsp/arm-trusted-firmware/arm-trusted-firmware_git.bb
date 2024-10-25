@@ -90,6 +90,17 @@ do_ipl_opt_deploy () {
     install -m 0644 ${S}/tools/renesas/rcar_layout_create/cert_header_sa6.srec ${DEPLOY_DIR_IMAGE}/cert_header_sa6-${EXTRA_ATFW_CONF}.srec
 }
 
+do_ipl_opt_clean () {
+    rm -f ${DEPLOY_DIR_IMAGE}/bl2-${MACHINE}-${EXTRA_ATFW_CONF}.elf
+    rm -f ${DEPLOY_DIR_IMAGE}/bl2-${MACHINE}-${EXTRA_ATFW_CONF}.bin
+    rm -f ${DEPLOY_DIR_IMAGE}/bl2-${MACHINE}-${EXTRA_ATFW_CONF}.srec
+    rm -f ${DEPLOY_DIR_IMAGE}/bl31-${MACHINE}-${EXTRA_ATFW_CONF}.elf
+    rm -f ${DEPLOY_DIR_IMAGE}/bl31-${MACHINE}-${EXTRA_ATFW_CONF}.bin
+    rm -f ${DEPLOY_DIR_IMAGE}/bl31-${MACHINE}-${EXTRA_ATFW_CONF}.srec
+    rm -f ${DEPLOY_DIR_IMAGE}/bootparam_sa0-${EXTRA_ATFW_CONF}.srec
+    rm -f ${DEPLOY_DIR_IMAGE}/cert_header_sa6-${EXTRA_ATFW_CONF}.srec
+}
+
 def do_extra_aft_build (d, board):
     extra_aft_confs_dict = d.getVarFlags(board)
     extra_aft_confs_list = list(extra_aft_confs_dict.keys())
@@ -100,6 +111,14 @@ def do_extra_aft_build (d, board):
         bb.build.exec_func('do_ipl_opt_compile', d)
         bb.build.exec_func('do_ipl_opt_deploy', d)
 
+def do_extra_aft_clean (d, board):
+    extra_aft_confs_dict = d.getVarFlags(board)
+    extra_aft_confs_list = list(extra_aft_confs_dict.keys())
+
+    for atf_conf in extra_aft_confs_list:
+        d.setVar('EXTRA_ATFW_CONF', atf_conf)
+        d.setVar('EXTRA_ATFW_OPT', extra_aft_confs_dict[atf_conf])
+        bb.build.exec_func('do_ipl_opt_clean', d)
 
 # For IPL compile options for H3/H3ULCB (SoC: r8a7795), E3 (SoC: r8a7790)
 python do_extra_ipl_opt () {
@@ -117,8 +136,21 @@ python do_extra_ipl_opt () {
         do_extra_aft_build(d, "E3")
 }
 
+python do_extra_ipl_opt_clean() {
+    soc = d.getVar('SOC_FAMILY').split(':')[1]
+    machine = d.getVar('MACHINE_ARCH')
+    if soc == "r8a7795":
+        board = "H3ULCB" if machine == "h3ulcb" else "H3"
+    elif soc == "r8a77990":
+        board = "E3"
+    else:
+        return
+    do_extra_aft_clean(d, board)
+}
+
 do_ipl_opt_compile[dirs] = "${B}"
 do_ipl_opt_deploy[dirs] = "${B}"
 
 addtask deploy before do_build after do_compile
 addtask extra_ipl_opt after do_configure before do_compile
+addtask extra_ipl_opt_clean before do_cleansstate after do_clean
