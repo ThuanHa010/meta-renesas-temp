@@ -10,12 +10,12 @@ require include/multimedia-control.inc
 
 S = "${WORKDIR}/git"
 
-BRANCH = "rcar-gen3_v2.9"
+BRANCH = "rcar_gen3_v2.11"
 SRC_URI = "git://github.com/renesas-rcar/arm-trusted-firmware.git;branch=${BRANCH};protocol=https"
 SRC_URI += " file://0001-Makefile-Disable-linker-warning.patch"
-SRCREV = "9cdb21f75157fc82e8ca104aa21c4ab722383b04"
+SRCREV = "77bb3ab5eb23fda2eeb9af81715fd653d5d968e0"
 
-PV = "v2.9+renesas+git${SRCPV}"
+PV = "v2.11+renesas+git${SRCPV}"
 
 COMPATIBLE_MACHINE = "(salvator-x|ulcb|ebisu|draak)"
 PLATFORM = "rcar"
@@ -39,6 +39,7 @@ E3[4d] = "LSI=E3 RCAR_SA0_SIZE=0 RCAR_AVS_SETTING_ENABLE=0 RCAR_DRAM_DDR3L_MEMCO
 
 # requires CROSS_COMPILE set by hand as there is no configure script
 export CROSS_COMPILE="${TARGET_PREFIX}"
+export ARCH="arm64"
 
 # Let the Makefile handle setting up the CFLAGS and LDFLAGS as it is a standalone application
 CFLAGS[unexport] = "1"
