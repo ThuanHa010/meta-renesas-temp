@@ -1,0 +1,24 @@
+diff --git a/arch/arm64/boot/dts/renesas/r8a77961-salvator-xs.dts b/arch/arm64/boot/dts/renesas/r8a77961-salvator-xs.dts
+index 63fe64c3e622..c81d4f28bf99 100644
+--- a/arch/arm64/boot/dts/renesas/r8a77961-salvator-xs.dts
++++ b/arch/arm64/boot/dts/renesas/r8a77961-salvator-xs.dts
+@@ -16,17 +16,8 @@ / {
+ 	memory@48000000 {
+ 		device_type = "memory";
+ 		/* first 128MB is reserved for secure area. */
+-		reg = <0x0 0x48000000 0x0 0x78000000>;
+-	};
+-
+-	memory@480000000 {
+-		device_type = "memory";
+-		reg = <0x4 0x80000000 0x0 0x80000000>;
+-	};
+-
+-	memory@600000000 {
+-		device_type = "memory";
+-		reg = <0x6 0x00000000 0x1 0x00000000>;
++		linux,usable-memory = <0x0 0x48000000 0x0 0x78000000>,
++							  <0x6 0x00000000 0x1 0x00000000>;
+ 	};
+ 
+ 	reserved-memory {
