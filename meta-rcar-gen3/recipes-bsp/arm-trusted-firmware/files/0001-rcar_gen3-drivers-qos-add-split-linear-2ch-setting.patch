@@ -1,0 +1,54 @@
+From 75d1cb8df1c36ef13270aabde33cadd74507d34c Mon Sep 17 00:00:00 2001
+From: Hieu Nguyen <hieu.nguyen.dn@renesas.com>
+Date: Wed, 6 Nov 2024 15:39:01 +0700
+Subject: [PATCH] rcar_gen3: drivers: qos: add split linear 2ch setting
+
+ADSPLCR1.AREA = 0x1D -> 512MB Area Size
+ADSPLCR1.SPLITSEL = 0x0F  -> 512MB * 4 = first 2GB split   // 0x0F is 1111b, mean 4 first areas.
+
+DBSC CH0: 0x4_0000_0000 - 0x4_7FFF_FFFF -> split (first 2GB)
+DBSC CH0: 0x4_8000_0000 - 0x4_FFFF_FFFF -> linear (second 2GB)
+DBSC CH1: 0x6_0000_0000 - 0x6_7FFF_FFFF -> split (first 2GB)
+DBSC CH1: 0x6_8000_0000 - 0x6_FFFF_FFFF -> linear (second 2GB)
+
+Signed-off-by: Hieu Nguyen <hieu.nguyen.dn@renesas.com>
+---
+ drivers/renesas/common/qos_reg.h              | 1 +
+ drivers/renesas/rcar/qos/M3/qos_init_m3_v30.c | 9 +++++++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/drivers/renesas/common/qos_reg.h b/drivers/renesas/common/qos_reg.h
+index f2012fa45..ba4a29ff7 100644
+--- a/drivers/renesas/common/qos_reg.h
++++ b/drivers/renesas/common/qos_reg.h
+@@ -14,6 +14,7 @@
+ #define	RCAR_DRAM_SPLIT_4CH		1U
+ #define	RCAR_DRAM_SPLIT_2CH		2U
+ #define	RCAR_DRAM_SPLIT_AUTO		3U
++#define	RCAR_DRAM_SPLIT_LINEAR_2CH		4U
+ #define	RST_BASE			(0xE6160000U)
+ #define	RST_MODEMR			(RST_BASE + 0x0060U)
+ 
+diff --git a/drivers/renesas/rcar/qos/M3/qos_init_m3_v30.c b/drivers/renesas/rcar/qos/M3/qos_init_m3_v30.c
+index 58b14393e..80f99c401 100644
+--- a/drivers/renesas/rcar/qos/M3/qos_init_m3_v30.c
++++ b/drivers/renesas/rcar/qos/M3/qos_init_m3_v30.c
+@@ -125,6 +125,15 @@ void qos_init_m3_v30(void)
+ 				  | ADSPLCR0_SWP);
+ 	io_write_32(AXI_ADSPLCR2, 0x00001004U);
+ 	io_write_32(AXI_ADSPLCR3, 0x00000000U);
++#elif (RCAR_DRAM_SPLIT == RCAR_DRAM_SPLIT_LINEAR_2CH)
++	NOTICE("BL2: DRAM Split-linear is 2ch\n");
++	io_write_32(AXI_ADSPLCR0, 0x00000000U);
++	io_write_32(AXI_ADSPLCR1, ADSPLCR0_ADRMODE_DEFAULT
++				  | ADSPLCR0_SPLITSEL(0x0FU)
++				  | ADSPLCR0_AREA(0x1DU)
++				  | ADSPLCR0_SWP);
++	io_write_32(AXI_ADSPLCR2, 0x00001004U);
++	io_write_32(AXI_ADSPLCR3, 0x00000000U);
+ #else
+ 	NOTICE("BL2: DRAM Split is OFF\n");
+ #endif
+-- 
+2.34.1
+
