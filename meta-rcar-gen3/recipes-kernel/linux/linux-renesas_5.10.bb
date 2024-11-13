@@ -32,6 +32,10 @@ SRC_URI_append = " \
     ${@oe.utils.conditional("USE_AVB", "1", " file://usb-video-class.cfg", "", d)} \
 "
 
+SRC_URI_append = " \
+    file://AsymetricalMem-3gb-3gb.patch \
+"
+
 # Add module.lds
 SRC_URI_append = " \
     file://0001-scripts-Add-module.lds-to-fix-out-of-tree-modules-bu.patch \
